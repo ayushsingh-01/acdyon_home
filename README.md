@@ -34,7 +34,7 @@
 
 | Principle | How it appears in the work |
 | --- | --- |
-| **Craft over decoration** | The Part 2 hero leads into an interactive product canvas instead of making unverified marketing claims. |
+| **Craft over decoration** | The Part 2 hero leads into an interactive product canvas where visitors can switch views and add a browser-saved thread, instead of making unverified marketing claims. |
 | **Permission over evasion** | Part 1 uses a public API directly, preserves outbound source links, and makes failure visible. |
 | **Honesty over social proof** | No fabricated testimonials, logos, user counts, or performance claims. |
 | **Responsive by default** | Both experiences were reviewed at 390px and 1440px with no horizontal scroll. |

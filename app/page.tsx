@@ -8,11 +8,24 @@ const views = [
   { label: "Quiet", task: "Research archive", note: "Nothing needs you", color: "sky" }
 ];
 
+type Thread = { id: string; title: string; view: number };
+
 export default function Home() {
   const [active, setActive] = useState(0);
   const [notice, setNotice] = useState(false);
   const [secretFound, setSecretFound] = useState(false);
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [threads, setThreads] = useState<Thread[]>([]);
   const view = views[active];
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("acdyon-demo-threads");
+      if (saved) setThreads(JSON.parse(saved) as Thread[]);
+    } catch {
+      // Storage is optional; the demo remains usable in private browsing.
+    }
+  }, []);
 
   useEffect(() => {
     const sequence = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
@@ -29,6 +42,16 @@ export default function Home() {
   function showMessage() {
     setNotice(true);
     window.setTimeout(() => setNotice(false), 2800);
+  }
+
+  function createThread(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const title = new FormData(event.currentTarget).get("title")?.toString().trim();
+    if (!title) return;
+    const next = [...threads, { id: crypto.randomUUID(), title, view: active }];
+    setThreads(next);
+    try { window.localStorage.setItem("acdyon-demo-threads", JSON.stringify(next)); } catch { /* Storage is optional. */ }
+    setComposerOpen(false);
   }
 
   return (
@@ -81,7 +104,7 @@ export default function Home() {
               <span className="space-item">◌ Shared work</span>
             </aside>
             <div className="canvas-main">
-              <div className="canvas-title"><div><p className="kicker">{view.label}</p><h2>What needs a good eye?</h2></div><button className="add" onClick={showMessage}>+ Add a thread</button></div>
+              <div className="canvas-title"><div><p className="kicker">{view.label}</p><h2>What needs a good eye?</h2></div><button className="add" onClick={() => setComposerOpen(true)}>+ Add a thread</button></div>
               <article className="hero-task">
                 <div className={`task-swatch ${view.color}`} />
                 <div><span className="task-type">A clear next step</span><h3>{view.task}</h3><p>{view.note}</p></div>
@@ -91,6 +114,7 @@ export default function Home() {
                 <article><span className="dot lilac" /><p>Signal from the team</p><strong>Two decisions are ready.</strong></article>
                 <article><span className="dot sky" /><p>Protected time</p><strong>Your afternoon is clear.</strong></article>
               </div>
+              {threads.filter((thread) => thread.view === active).map((thread) => <article className="created-thread" key={thread.id}><span>New thread</span><strong>{thread.title}</strong><small>Saved in this browser</small></article>)}
             </div>
           </div>
         </div>
@@ -106,6 +130,7 @@ export default function Home() {
 
       <footer className="shell"><a className="wordmark" href="#top">acdyon<span>·</span></a><p>Made for considered work.</p><button className="text-button" onClick={showMessage}>Request access ↗</button></footer>
       {secretFound && <p className="secret-note" role="status">You found the constellation. Good eyes deserve a little extra space. ✦</p>}
+      {composerOpen && <div className="composer-backdrop" role="presentation" onMouseDown={() => setComposerOpen(false)}><form className="composer" aria-label="Add a thread" onSubmit={createThread} onMouseDown={(event) => event.stopPropagation()}><button className="composer-close" type="button" onClick={() => setComposerOpen(false)} aria-label="Close add thread">×</button><p className="kicker">Add to {view.label}</p><h2>What needs attention?</h2><label htmlFor="thread-title">Thread title</label><input autoFocus id="thread-title" name="title" placeholder="e.g. Confirm the launch narrative" maxLength={90} /><div className="composer-actions"><button type="button" onClick={() => setComposerOpen(false)}>Cancel</button><button type="submit">Save thread →</button></div></form></div>}
     </main>
   );
 }

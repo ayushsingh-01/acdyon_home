@@ -28,6 +28,7 @@ The page intentionally stays short. Every section has a job: the hero defines th
 ## Interaction and accessibility
 
 - **Canvas views:** `Today`, `In motion`, and `Quiet` update the priority card with React state.
+- **Add a thread:** a focused composer creates a thread in the active view and saves it to browser storage. It makes the demo meaningfully usable while being explicit that it is not a shared backend workspace.
 - **Access CTA:** provides a visible, truthful “opening soon” status instead of leading to a fictional signup flow.
 - **Keyboard focus:** native buttons and links retain their accessible semantics; status changes use `role="status"`.
 - **Responsive behavior:** navigation reduces on mobile, the product navigation collapses appropriately, and the content never depends on hover.
