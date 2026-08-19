@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const views = [
   { label: "Today", task: "Prepare client narrative", note: "Ready when you are", color: "coral" },
@@ -11,7 +11,20 @@ const views = [
 export default function Home() {
   const [active, setActive] = useState(0);
   const [notice, setNotice] = useState(false);
+  const [secretFound, setSecretFound] = useState(false);
   const view = views[active];
+
+  useEffect(() => {
+    const sequence = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
+    const entered: string[] = [];
+    function listen(event: KeyboardEvent) {
+      entered.push(event.key.toLowerCase());
+      if (entered.length > sequence.length) entered.shift();
+      if (entered.join(",") === sequence.join(",").toLowerCase()) setSecretFound(true);
+    }
+    window.addEventListener("keydown", listen);
+    return () => window.removeEventListener("keydown", listen);
+  }, []);
 
   function showMessage() {
     setNotice(true);
@@ -19,7 +32,7 @@ export default function Home() {
   }
 
   return (
-    <main>
+    <main className={secretFound ? "constellation-found" : undefined}>
       <nav className="nav shell" aria-label="Primary navigation">
         <a className="wordmark" href="#top" aria-label="Acdyon home">acdyon<span>·</span></a>
         <div className="nav-links">
@@ -92,6 +105,7 @@ export default function Home() {
       </section>
 
       <footer className="shell"><a className="wordmark" href="#top">acdyon<span>·</span></a><p>Made for considered work.</p><button className="text-button" onClick={showMessage}>Request access ↗</button></footer>
+      {secretFound && <p className="secret-note" role="status">You found the constellation. Good eyes deserve a little extra space. ✦</p>}
     </main>
   );
 }
